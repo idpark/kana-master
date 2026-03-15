@@ -69,6 +69,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* Kana Detail Modal */
 .detail-char{font-size:4rem;margin-bottom:4px}
 .detail-romaji{font-size:1.2rem;color:var(--blue);font-weight:700;margin-bottom:12px}
+.detail-ai-img{width:180px;height:180px;object-fit:cover;border-radius:16px;margin:0 auto 8px;display:block;box-shadow:0 4px 12px rgba(0,0,0,.3)}
 .detail-svg{width:160px;height:160px;margin:0 auto 12px;background:var(--bg);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .detail-svg svg{width:150px;height:150px}
 .detail-hint{font-size:.9rem;line-height:1.6;margin-bottom:4px}
@@ -105,6 +106,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .flashcard.flipped .fc-back-content{display:flex;flex-direction:column;align-items:center;gap:8px}
 .fc-romaji{font-size:2rem;font-weight:700;color:var(--blue)}
 .fc-mnemonic{font-size:.9rem;color:var(--muted);line-height:1.5;max-width:280px}
+.fc-ai-img{width:140px;height:140px;object-fit:cover;border-radius:12px;margin:0 auto 8px;display:block;box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .fc-svg-area{width:140px;height:140px;background:var(--bg);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .fc-svg-area svg{width:130px;height:130px}
 
@@ -325,6 +327,7 @@ select.setting-select{background:var(--card2);color:var(--text);border:1px solid
           </div>
           <div class="fc-back-content">
             <div class="fc-romaji" id="fcRomaji"></div>
+            <img class="fc-ai-img" id="fcAiImg" style="display:none" />
             <div class="fc-svg-area" id="fcSvg"></div>
             <div class="fc-mnemonic" id="fcMnemonic"></div>
           </div>
@@ -509,6 +512,7 @@ select.setting-select{background:var(--card2);color:var(--text);border:1px solid
     <button class="modal-close" id="detailClose">✕</button>
     <div class="detail-char" id="detChar"></div>
     <div class="detail-romaji" id="detRomaji"></div>
+    <img class="detail-ai-img" id="detAiImg" style="display:none" />
     <div class="detail-svg" id="detSvg"></div>
     <div class="detail-variant" id="detVariant" style="display:none"></div>
     <div class="detail-hint" id="detHint"></div>
@@ -628,10 +632,29 @@ function createKanaCell(ch){
   return cell;
 }
 
+// ====== AI Mnemonic Image ======
+const HIRA_SET=new Set(H.map(x=>x.c));
+function getAiImgPath(ch){
+  if(!HIRA_SET.has(ch.c)) return null;
+  return `images/hiragana/${ch.r}.png`;
+}
+function loadAiImg(imgEl, ch){
+  const path=getAiImgPath(ch);
+  if(path){
+    imgEl.src=path;
+    imgEl.alt=`${ch.c} (${ch.r}) mnemonic`;
+    imgEl.style.display="block";
+    imgEl.onerror=()=>{imgEl.style.display="none"};
+  }else{
+    imgEl.style.display="none";
+  }
+}
+
 // ====== Detail Modal ======
 function openDetail(ch){
   $("detChar").textContent=ch.c;
   $("detRomaji").textContent=ch.r;
+  loadAiImg($("detAiImg"), ch);
   const svg=MNEMONIC_SVG[ch.c];
   $("detSvg").innerHTML=svg||`<div style="font-size:4rem;opacity:.3">${ch.c}</div>`;
   $("detHint").innerHTML=`<strong>${ch.h||""}</strong>`;
@@ -714,6 +737,7 @@ function renderFlashcard(){
   card.classList.remove("flipped");
   $("fcChar").textContent=ch.c;
   $("fcRomaji").textContent=ch.r;
+  loadAiImg($("fcAiImg"), ch);
   const svg=MNEMONIC_SVG[ch.c];
   $("fcSvg").innerHTML=svg||"";
   $("fcMnemonic").textContent=ch.m||ch.h||"";

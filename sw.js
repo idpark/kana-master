@@ -1,4 +1,4 @@
-const CACHE_NAME="kana-v1";
+const CACHE_NAME="kana-v2";
 const STATIC_ASSETS=[
   "./index.html",
   "./manifest.json",
