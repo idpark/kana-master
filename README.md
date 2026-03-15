@@ -26,3 +26,8 @@
 - SRS SM-2 간격 반복 알고리즘
 - Web Speech API (TTS 발음)
 - GitHub Pages 배포
+
+## Contributors
+
+- [@idpark](https://github.com/idpark) — 기획, 개발
+- Claude Code (Anthropic) — AI 페어 프로그래밍
